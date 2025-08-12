@@ -131,3 +131,12 @@ if __name__ == '__main__':
 
     # meaning of this
     # SZ:65758292/65845577/1.00 = SZ:Compressed_size/Actual_size/Level_of_compression or Compression_Ratio
+    # From 1.9GB (CSV), it will become 228.9MB in parquet formats.
+
+    #[itv020752@g01 ~]$ hadoop fs -du -h /public/trendytech/retail_db
+    #1.9 G    5.8 G    /public/trendytech/retail_db/ordersnew
+
+    # [itv020752@g01 ~]$ hadoop fs -ls -h data/datasets/parquetnew
+    # Found 2 items
+    # -rw-r--r--   3 itv020752 supergroup          0 2025-08-12 03:46 data/datasets/parquetnew/_SUCCESS
+    # -rw-r--r--   3 itv020752 supergroup    228.9 M 2025-08-12 03:46 data/datasets/parquetnew/part-00000-a3beb71f-fbc2-48ee-8af0-96ac258ded2d-c000.snappy.parquet
