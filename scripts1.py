@@ -2,7 +2,11 @@
 # coluns based file format: all the entire columns are stored together on the disk, column by columns.
 
 # integer takes less spaces as compared to the string data type, if we are storing the same data type at one place,
-# then it will take less space as compared to the row based file formats.
+# then it will take less space as compared to the row based file formats. all the same data types are stored together
+# in the columns based file formats, so it will take less space how ? - by using lightweight compression techniques.
+# e.g -> dictionary encoding, run length encoding, bit packing, run length encoding, etc.
+
+# generalized compression techniques are: snappy, gzip, bzip2, lz4, zstd, etc.
 
 # row based file format are faster to write, columns based file format when we want to read a subest of columns. 
 
