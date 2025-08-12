@@ -93,3 +93,11 @@ if __name__ == '__main__':
     # |       1|2013-07-25|        null|       null|
     # |       2|2013-07-25|        null|       null|
     # +--------+----------+------------+-----------+
+
+    # [itv020752@g01 ~]$ hadoop fs -ls -h data/datasets/evolSchema
+    # Found 5 items
+    # -rw-r--r--   3 itv020752 supergroup          0 2025-08-12 06:23 data/datasets/evolSchema/_SUCCESS
+    # -rw-r--r--   3 itv020752 supergroup        735 2025-08-12 06:23 data/datasets/evolSchema/part-00000-1a76649e-5fcc-4f0b-a81f-b380f3403791-c000.snappy.parquet
+    # -rw-r--r--   3 itv020752 supergroup      1.3 K 2025-08-12 06:23 data/datasets/evolSchema/part-00000-4a6a5799-c772-4afa-8d20-d155d2cffeac-c000.snappy.parquet
+    # -rw-r--r--   3 itv020752 supergroup       1001 2025-08-12 06:23 data/datasets/evolSchema/part-00000-73d60a3b-c753-4521-9bfb-3b72185504fb-c000.snappy.parquet
+    # -rw-r--r--   3 itv020752 supergroup      1.3 K 2025-08-12 06:23 data/datasets/evolSchema/part-00000-8afd1fc5-f4d2-4d7c-9537-a229aaaa1db9-c000.snappy.parquet
