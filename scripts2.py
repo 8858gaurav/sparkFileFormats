@@ -136,7 +136,48 @@ if __name__ == '__main__':
     #[itv020752@g01 ~]$ hadoop fs -du -h /public/trendytech/retail_db
     #1.9 G    5.8 G    /public/trendytech/retail_db/ordersnew
 
+
     # [itv020752@g01 ~]$ hadoop fs -ls -h data/datasets/parquetnew
     # Found 2 items
     # -rw-r--r--   3 itv020752 supergroup          0 2025-08-12 03:46 data/datasets/parquetnew/_SUCCESS
     # -rw-r--r--   3 itv020752 supergroup    228.9 M 2025-08-12 03:46 data/datasets/parquetnew/part-00000-a3beb71f-fbc2-48ee-8af0-96ac258ded2d-c000.snappy.parquet
+
+
+    # parquet-data/ (Folder)
+    # │
+    # ├── File 1: part-00000.parquet (128 MB on disk)
+    # │   ├── Row Group 1 (~128 MB raw data in RAM -> compressed down to e.g., ~42 MB)
+    # │   │   ├── Column Chunk 1 (order_id)       --> Pages 1, 2, 3... (~1 MB each)
+    # │   │   ├── Column Chunk 2 (order_date)     --> Pages 1, 2, 3... (~1 MB each)
+    # │   │   └── Column Chunk 3 (customer_id)    --> Pages 1, 2, 3... (~1 MB each)
+    # │   │
+    # │   ├── Row Group 2 (~128 MB raw data in RAM -> compressed down to e.g., ~43 MB)
+    # │   │   └── [Same Column Chunks & Pages structure]
+    # │   │
+    # │   └── Row Group 3 (~128 MB raw data in RAM -> compressed down to e.g., ~43 MB)
+    # │       └── [Same Column Chunks & Pages structure]
+    # │
+    # └── File 2: part-00001.parquet (128 MB on disk)
+    #     ├── Row Group 1 (~128 MB raw data in RAM -> compressed down to e.g., ~42 MB)
+    #     │   └── [Same Column Chunks & Pages structure]
+    #     ├── Row Group 2 (~128 MB raw data in RAM -> compressed down to e.g., ~43 MB)
+    #     │   └── [Same Column Chunks & Pages structure]
+    #     └── Row Group 3 (~128 MB raw data in RAM -> compressed down to e.g., ~43 MB)
+    #         └── [Same Column Chunks & Pages structure]
+
+    # [STEP 0: SOURCE DISK]            [STEP 1: EXECUTOR RAM]               [STEP 2: RAM BUFFER]               [STEP 3: TARGET DISK]
+    # Source Data                      Uncompressed Row Processing          Encoded & Compressed               Flushed to Parquet File
+    # --------------------             ---------------------------          --------------------               -----------------------
+    # CSV / JSON / Parquet  ──(Read)──>   ~128 MB Raw Records        ──(Compress)──> ~42 MB Byte Buffer   ──(Flush)──>    Row Group written to
+    # on HDFS / S3 / Local                in Executor Memory                       in Executor Memory                 part-00000.parquet
+    
+    # [State]                          [State]                              [State]                            [State]
+    # • Serialized Bytes               • Deserialized Binary               • Columnar Encoded                 • Persisted Parquet
+    #   (Text/CSV layout)                (`UnsafeRow` format)                 (Dictionary/RLE + Snappy)          Row Group on Disk
+
+    # Component,   Step 0: Source Input (Est.),Step 1: Uncompressed Size in RAM,Step 2: Encoded Buffer in RAM,Step 3: Compressed Size written to DISK
+    # Row Group 1, ~600 MB CSV text,           ~128 MB Raw Records,             ~42 MB Snappy Buffer,        ~42 MB inside part-00000.parquet
+    # Row Group 2, ~600 MB CSV text,           ~128 MB Raw Records,             ~43 MB Snappy Buffer,        ~43 MB inside part-00000.parquet
+    # Row Group 3, ~600 MB CSV text,           ~128 MB Raw Records,             ~43 MB Snappy Buffer,        ~43 MB inside part-00000.parquet
+    # Total File,  ~1.8 GB CSV Input,          ~384 MB Total Raw Data,          ~128 MB Total Buffer,        ~128 MB Single File on Disk
+    # (part-00000.parquet)
